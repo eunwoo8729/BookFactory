@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC '-//ibatis.apache.org//DTD Sql Map 2.0//EN'
+'http://ibatis.apache.org/dtd/sql-map-2.dtd'>
+<sqlMap namespace="book">
+	<!-- 데이터를 꺼낼때 사용할것 설정 -->
+ <typeAlias alias="book" type="book.bookVO"/>
+ <typeAlias alias="loan" type="book.loanVO" />
+ <typeAlias alias="bookLike" type="book.bookLikeVO" />
+ <typeAlias alias="member" type="member.memberVO" />
+ 
+ 	<!-- 리절트 맵 정의: id="book" -->
+ <resultMap id="book" class="book">
+  <result property="b_no" column="b_no"/>
+  <result property="b_category" column="b_category"/>
+  <result property="b_name" column="b_name"/>
+  <result property="b_writer" column="b_writer"/>
+  <result property="b_pub" column="b_pub"/>
+  <result property="b_pubDate" column="b_pubDate"/>
+  <result property="count" column="count"/>
+  <result property="b_intro" column="b_intro"/>
+  <result property="b_writerIntro" column="b_writerIntro"/>
+  <result property="b_list" column="b_list"/>
+  <result property="b_like" column="b_like"/>
+  <result property="b_img" column="b_img"/>
+  <result property="b_imgCopy" column="b_imgCopy"/>
+ </resultMap>
+ 
+	<!-- 리절트 맵 정의: id="loan" -->
+	<resultMap id="loan" class="loan">
+		<result property="l_no" column="l_no"/>
+		<result property="m_no" column="m_no"/>
+		<result property="b_no" column="b_no"/>
+		<result property="l_outDate" column="l_outDate"/>
+		<result property="l_inDate" column="l_inDate"/>
+	</resultMap>
+	
+	<!-- 리절트 맵 정의: id="bookLike" -->
+	<resultMap id="bookLike" class="bookLike">
+		<result property="bLike_id" column="bLike_id"/>
+		<result property="bLike_no" column="bLike_no"/>
+	</resultMap>
+	
+	<!-- 리절트 맵 정의: id="member" -->
+	<resultMap id="loginRes" class="login">
+        <result property="m_id" column="M_ID"/>
+        <result property="m_pw" column="M_PW"/>
+        <result property="m_no" column="M_NO"/>
+        <result property="m_name" column="M_NAME"/>
+        <result property="m_bd" column="M_BD"/>
+        <result property="m_jumin" column="M_JUMIN"/>
+        <result property="m_email" column="M_EMAIL"/>
+        <result property="m_phone" column="M_PHONE"/>
+        <result property="m_zipcode" column="M_ZIPCODE"/>
+        <result property="m_addr1" column="M_ADDR1"/>
+        <result property="m_addr2" column="M_ADDR2"/>
+        <result property="m_isadmin" column="M_ISADMIN"/>
+     </resultMap>
+	
+	
+ 
+ <!-- 공통으로 사용할 select 절 정의 -->
+  <sql id="select-all-book">
+ SELECT * FROM BOOK
+ </sql>
+  <sql id="select-all-loan">
+ SELECT * FROM LOAN
+ </sql>
+ <sql id="select-all-bookLike">
+ SELECT * FROM BOOKLIKE
+ </sql>
+ <sql id="select-all-member">
+ SELECT * FROM MEMBER
+ </sql>
+ 
+ <sql id="where-no-book">
+ where b_no=#b_no#
+ </sql>
+
+ 
+ <!-- select 쿼리문 정의 : 하단쿼리 실행 후 resultMap="book"자바빈에 저장된다 -->
+ <select id="selectAllBook" resultMap="book">
+ 	<include refid="select-all-book"/>
+ </select>
+ 
+ <!-- parameterClass="string" : #searchKeyword#로 세팅해줄 값의 자료형 -->
+	<select id="selectSearchB" resultMap="book" parameterClass="string">
+		<include refid="select-all-book"/>
+		WHERE b_name like #searchKeyword#
+		ORDER BY b_no DESC
+	</select>
+	
+	<select id="selectSearchW" resultMap="book" parameterClass="string">
+		<include refid="select-all-book"/>
+		WHERE b_writer like #searchKeyword#
+		ORDER BY b_no DESC
+	</select>
+	
+	<select id="selectSearchC" resultMap="book" parameterClass="string">
+		<include refid="select-all-book"/>
+		WHERE category like #searchKeyword#
+		ORDER BY b_no DESC
+	</select>
+
+<!-- 상세보기 -->
+	<select id="selectBook" resultMap="book" parameterClass="book">
+		<include refid="select-all-book"/>
+		where b_name = #b_name# and b_writer = #b_writer#
+	</select>
+	
+	<!-- book 테이블 update 쿼리문 정의 -->
+	<update id="updateBook" parameterClass="book">
+		update book set
+		count = (count-1)
+		where b_name = #b_name#
+		and b_writer = #b_writer#
+	</update>
+	
+	<!-- loan 테이블 insert 쿼리문 정의 -->
+	<insert id="insertLoan" parameterClass="loan">
+		insert into loan(
+		l_no, 
+		m_no, 
+		b_no, 
+		l_outDate
+		)
+		values(
+		LOAN_NO_SEQ.NEXTVAL, 
+		#m_no#, 
+		#b_no#, 
+		sysdate
+		)
+	</insert>
+	
+	<!-- 	 book 테이블 update 쿼리문 정의 -->
+	<update id="returnBook" parameterClass="int">
+		update book set
+		count = (count+1)
+		where b_no = #b_no#
+	</update> 
+	
+	<!-- 	 loan 테이블 update 쿼리문 정의 -->
+	<update id="returnLoan" parameterClass="int">
+		update loan set
+		l_inDate = sysdate
+		where b_no = #b_no#
+	</update>
+
+	<!-- 	 bookList 테이블 update 쿼리문 정의 -->
+	<update id="bookLike" parameterClass="int">
+		update book set
+		b_like = b_like + 1
+		<include refid="where-no" />
+	</update>
+	
+	<!-- bookLike 테이블 insert 쿼리문 정의 -->
+	<insert id="book_like" parameterClass="int">
+		insert into bookLike(
+		bLike_id, 
+		bLike_no, 
+		)
+		values( 
+		#bLike_id#, 
+		#bLike_no#, 
+		)
+	</insert>
+	
+		<!-- 동일 도서 추천 여부 검색 -->
+	<select id="booklike_check" parameterClass="map" resultMap="int">
+		select count(*) from bookLike where bLike_no = #{no} and bLike_id = #{id}
+	</select>
+	
+	<!-- 도서 추천 -->
+	<insert id="book_update" parameterClass="map">
+		insert into bookLike values(#{no}, #{id})
+	</insert>
+	<!-- 
+	도서 추천 취소
+	<delete id="book_delete" parameterClass="map">
+		delete from bookLike where bLike_no = #{no} and bLike_id = #{id}
+	</delete>
+	 -->
+	<!-- 도서 추천수 -->
+	<select id="book_count" parameterClass="int" resultMap="int">
+		select count(*) from bookLike where bLike_no = #{no}
+	</select>
+
+</sqlMap>
