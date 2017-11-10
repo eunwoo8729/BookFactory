@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+
+<tiles-definitions>
+
+
+
+	<definition name="admin" template="/tiles/layout-left.jsp">
+		<put-attribute name="title" value="관리자페이지" />
+		<put-attribute name="header" value="/tiles/header/header.jsp" />
+		<put-attribute name="lefter" value="/tiles/lefter/lefter-admin.jsp" />
+		<put-attribute name="body" value="/admin/adminBookList.jsp" />
+		<put-attribute name="footer" value="/tiles/footer/footer.jsp" />
+	</definition>
+	
+	<!-- 도서 목록 -->
+	<definition name="adminBookListForm" extends="admin">
+		<put-attribute name="title" value="도서 목록" />
+		<put-attribute name="body" value="/admin/adminBookList.jsp" />
+	</definition>
+	
+	<!-- 도서 등록 -->
+	<definition name="adminBookWriteForm" extends="admin">
+		<put-attribute name="title" value="도서 등록" />
+		<put-attribute name="body" value="/admin/adminBookWriteForm.jsp" />
+	</definition>
+	
+	<!-- 도서 수정 -->
+	<definition name="adminBookModifyForm" extends="admin">
+		<put-attribute name="body" value="/board/boardModifyForm.jsp" />
+	</definition>
+
+	<!-- 도서 상세보기 -->
+
+	<definition name="adminBookDetailForm" extends="admin">
+		<put-attribute name="body" value="/admin/adminBookDetail.jsp" />
+	</definition>
+	
+</tiles-definitions>

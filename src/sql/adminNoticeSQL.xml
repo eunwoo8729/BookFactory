@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC '-//ibatis.apache.org//DTD Sql Map 2.0//EN' 'http://ibatis.apache.org/dtd/sql-map-2.dtd'>
+<sqlMap namespace="Notice">
+	<typeAlias alias="notice" type="noitce.noticeVO" />
+
+	<resultMap id="noticeRes" class="notice">
+		<result property="n_no" column="n_no" />
+		<result property="n_subject" column="n_subject" />
+		<result property="n_content" column="n_content" />
+		<result property="n_regdate" column="n_regdate" />
+		<result property="n_readhit" column="n_readhit" />
+	</resultMap>
+
+	<sql id="select-all">
+		SELECT * FROM NOTICEBOARD
+	</sql>
+
+	<sql id="where-no">
+		where n_no=#n_no#
+	</sql>
+
+	<select id="selectAll" resultMap="boardRes">
+		<include refid="select-all"></include>
+		order by n_no desc
+	</select>
+
+	<select id="selectOne" resultMap="boardRes" parameterClass="int">
+		<include refid="select-all" />
+		<include refid="where-no" />
+	</select>
+
+
+	<!-- 검색 -->
+
+	<select id="selectSearchS" resultMap="boardRes" parameterClass="string">
+		<include refid="select-all" />
+		WHERE N_SUBJECT like #searchKeyword#
+		ORDER BY n_no DESC
+	</select>
+
+	<select id="selectSearchC" resultMap="boardRes" parameterClass="string">
+		<include refid="select-all" />
+		WHERE N_CONTENT like #searchKeyword#
+		ORDER BY n_no DESC
+	</select>
+
+	<insert id="insertBoard" parameterClass="board">
+		INSERT INTO NOTICEBOARD
+		(
+		N_NO,
+		N_SUBJECT,
+		N_CONTENT,
+		N_REGDATE,
+		N_READHIT
+		)
+		VALUES (
+		NOTICEBOARD_NO_SEQ.NEXTVAL,
+		#N_SUBJECT#,
+		#N_CONTENT#,
+		SYSDATE,
+		#N_READHIT#		
+		)
+	</insert>
+
+	<update id="updateBoard" parameterClass="board">
+		UPDATE NOTICEBOARD SET SUBCJECT = #subject#,
+		CONTENT = #content#
+		<include refid="where-no" />
+	</update>
+
+	<update id="updateReadHit" parameterClass="board">
+		UPDATE NOTICEBOARD SET READHIT = readhit + 1
+		<include refid="where-no" />
+	</update>
+
+	<delete id="deleteBoard" parameterClass="board">
+		DELETE FROM NOTICEBOARD
+		<include refid="where-no" />
+	</delete>
+
+</sqlMap>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC '-//ibatis.apache.org//DTD Sql Map 2.0//EN' 'http://ibatis.apache.org/dtd/sql-map-2.dtd'>
+<sqlMap namespace="adminMem">
+	<typeAlias alias="adminMem" type="admin.AdminMemberVO" />
+
+		<resultMap id="adminMemRes" class="adminMem">
+			<result property="m_no" column="M_NO"/>
+			<result property="m_id" column="M_ID"/>
+			<result property="m_pw" column="M_PW"/>
+			<result property="m_name" column="M_NAME"/>
+			<result property="m_jumin1" column="M_JUMIN1"/>
+			<result property="m_jumin2" column="M_JUMIN2"/>
+			<result property="m_email" column="M_EMAIL"/>
+			<result property="m_phone" column="M_PHONE"/>
+			<result property="m_zipcode" column="M_ZIPCODE"/>
+			<result property="m_add1" column="M_ADD1"/>
+			<result property="m_add2" column="M_ADD2"/>
+			<result property="m_isadmin" column="M_ISADMIN"/>
+		
+		</resultMap>
+
+	<sql id="select-all">
+		SELECT * FROM MEMBER
+	</sql>
+
+	<sql id="where-no">
+		where m_id=#m_id#
+	</sql>
+
+	<select id="selectAll" resultMap="adminMemRes">
+		<include refid="select-all"></include>
+		ORDER BY m_name ASC
+	</select>
+
+	<select id="selectOne" resultMap="adminMemRes" parameterClass="String">
+		<include refid="select-all" />
+		<include refid="where-no" />
+	</select>
+	
+	<!-- 검색 -->
+<!-- 	<select id="searchId" resultMap="adminMemRes" parameterClass="string">
+		<include refid="select-all" />
+		WHERE M_ID like #searchKeyword#
+		ORDER BY m_name ASC
+	</select>
+
+	<select id="searchName" resultMap="adminMemRes" parameterClass="string">
+		<include refid="select-all" />
+		WHERE m_name like #searchKeyword#
+		ORDER BY m_name ASC
+	</select>
+ -->
+	
+	<delete id="deleteMember" parameterClass="adminMem">
+		DELETE FROM MEMBER
+		<include refid="where-no" />
+	</delete>
+	
+</sqlMap>
